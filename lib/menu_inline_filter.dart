@@ -3,13 +3,19 @@ library menu_inline_filter;
 import 'package:flutter/material.dart';
 
 class MenuInlineFilter extends StatefulWidget {
+  //callback used when category selected
   final Function updateCategory;
+  //callback used when category subcategory selected
   final Function updateSubCategory;
-
+//list of list of subcategories
   final List<List<String>> subcategories;
+  //list of categories
   final List<String> categories;
+  //height of menu filter
   final double height;
+  //horizontal padding of menu filter
   final double horizontalPadding;
+  //background color of menu filter
   final Color backgroundColor;
 
   const MenuInlineFilter({

@@ -61,7 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _updateSubCategory(value) {
     setState(() {
       _currentSubCategory = value;
-      _filteredItems = _filterItemsSubCategory(value);
+      _filteredItems = _filterItemsSubCategory(_currentSubCategory);
     });
   }
 
@@ -81,23 +81,26 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Column(
-        // mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          MenuInlineFilter(
-            updateCategory: _updateCategory,
-            updateSubCategory: _updateSubCategory,
-            categories: _mainCategories,
-            subcategories: _subcategories,
-          ),
-          Expanded(
-            child: ListView(
-              children: _filteredItems
-                  .map((e) => ListTile(title: Text(e.name)))
-                  .toList(),
+      body: Padding(
+        padding: const EdgeInsets.only(top: 15),
+        child: Column(
+          // mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            MenuInlineFilter(
+              updateCategory: _updateCategory,
+              updateSubCategory: _updateSubCategory,
+              categories: _mainCategories,
+              subcategories: _subcategories,
             ),
-          )
-        ],
+            Expanded(
+              child: ListView(
+                children: _filteredItems
+                    .map((e) => ListTile(title: Text(e.name)))
+                    .toList(),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
