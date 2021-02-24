@@ -2,17 +2,10 @@ library menu_inline_filter;
 
 import 'package:flutter/material.dart';
 
-/// A Calculator.
-class Calculator {
-  /// Returns [value] plus 1.
-  int addOne(int value) => value + 1;
-}
-
 class MenuInlineFilter extends StatefulWidget {
   final Function updateCategory;
   final Function updateSubCategory;
-  // final String selectedCategoryName;
-  // final List<Widget> children;
+
   final List<List<String>> subcategories;
   final List<String> categories;
   final double height;
@@ -22,8 +15,6 @@ class MenuInlineFilter extends StatefulWidget {
   const MenuInlineFilter({
     Key key,
     this.updateCategory,
-    // this.selectedCategoryName,
-    // this.children,
     @required this.subcategories,
     @required this.categories,
     this.updateSubCategory,
@@ -33,6 +24,7 @@ class MenuInlineFilter extends StatefulWidget {
   })  : assert(subcategories != null),
         assert(categories != null),
         assert(subcategories is List<List<String>>),
+        assert(categories.length == subcategories.length),
         super(key: key);
 
   @override
@@ -63,7 +55,9 @@ class _MenuInlineFilterState extends State<MenuInlineFilter>
   final ScrollController _scrollController = ScrollController();
   // animation duration
   static const int _animationDuration = 800;
+  //current category index
   int _selectedCategoryIndex;
+  //current subcategory index
   int _selectedSubCategoryIndex;
 
   @override
@@ -374,28 +368,27 @@ class _MenuCategoryAppBarItemState extends State<MenuCategoryAppBarItem> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-        onTapDown: (details) {
-          setState(() {
-            _isOpen = !_isOpen;
-          });
-          widget.changeSelectedCategory(widget.menuItemCategory);
-          //update category for filtering menut list
-          if (widget.updateCategory != null) {
-            widget.updateCategory(widget.menuItemCategory);
-          }
-
-          widget.changeSelectedCategoryIndex(widget.index);
-          //move menu filter based on menu item selection
-          _moveMenuFilter(context);
-          //get size of individual menu item (used for closed transition animation)
-          widget.getItemSize(widget.menuItemCategory);
-        },
-        child: MenuAppBarItem(
-          height: widget.height,
-          title: widget.title,
-          textColor: widget.textColor,
-        ));
+    return MenuAppBarItem(
+      onTapDown: (details) {
+        setState(() {
+          _isOpen = !_isOpen;
+        });
+        widget.changeSelectedCategory(widget.menuItemCategory);
+        //update category for filtering menut list
+        if (widget.updateCategory != null) {
+          widget.updateCategory(widget.menuItemCategory);
+        }
+        //change selected category index
+        widget.changeSelectedCategoryIndex(widget.index);
+        //move menu filter based on menu item selection
+        _moveMenuFilter(context);
+        //get size of individual menu item (used for closed transition animation)
+        widget.getItemSize(widget.menuItemCategory);
+      },
+      height: widget.height,
+      title: widget.title,
+      textColor: widget.textColor,
+    );
   }
 }
 
@@ -421,18 +414,17 @@ class MenuSubCategoryAppBarItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Listener(
-        onPointerDown: (pointer) {
-          if (updateSubCategory != null) {
-            updateSubCategory(selectedSubCategory);
-          }
-          changeSelectedSubCategoryIndex(index);
-        },
-        child: MenuAppBarItem(
-          height: height,
-          title: title,
-          textColor: textColor,
-        ));
+    return MenuAppBarItem(
+      onTapDown: (details) {
+        if (updateSubCategory != null) {
+          updateSubCategory(selectedSubCategory);
+        }
+        changeSelectedSubCategoryIndex(index);
+      },
+      height: height,
+      title: title,
+      textColor: textColor,
+    );
   }
 }
 
@@ -442,22 +434,27 @@ class MenuAppBarItem extends StatelessWidget {
     @required this.title,
     this.textColor = Colors.grey,
     this.height,
+    this.onTapDown,
   }) : super(key: key);
 
   final String title;
   final Color textColor;
   final double height;
+  final void Function(TapDownDetails) onTapDown;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: height,
-      margin: const EdgeInsets.symmetric(horizontal: 5),
-      child: Center(
-        child: Text(title.toUpperCase(),
-            overflow: TextOverflow.fade,
-            // style: AppTextStyles.inlineFilter.copyWith(color: textColor)),
-            style: TextStyle(color: textColor, fontSize: 16)),
+    return GestureDetector(
+      onTapDown: onTapDown,
+      child: Container(
+        height: height,
+        margin: const EdgeInsets.symmetric(horizontal: 5),
+        child: Center(
+          child: Text(title.toUpperCase(),
+              overflow: TextOverflow.fade,
+              // style: AppTextStyles.inlineFilter.copyWith(color: textColor)),
+              style: TextStyle(color: textColor, fontSize: 16)),
+        ),
       ),
     );
   }
