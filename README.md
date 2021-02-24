@@ -1,7 +1,10 @@
 # menu_inline_filter
 
-A new Flutter package project.
+Animated menu inline filter.
+Developed by Kevin Mendez
+Designed by Daniel Enqvist
 
+![](inline_menu.gif)
 ## Getting Started
 
 This project is a starting point for a Dart
