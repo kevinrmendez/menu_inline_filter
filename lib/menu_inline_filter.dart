@@ -382,7 +382,7 @@ class _MenuCategoryAppBarItemState extends State<MenuCategoryAppBarItem> {
           widget.changeSelectedCategory(widget.menuItemCategory);
           //update category for filtering menut list
           if (widget.updateCategory != null) {
-            widget.updateCategory(widget.menuItemCategory, widget.index);
+            widget.updateCategory(widget.menuItemCategory);
           }
 
           widget.changeSelectedCategoryIndex(widget.index);
