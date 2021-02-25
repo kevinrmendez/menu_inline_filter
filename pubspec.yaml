@@ -1,8 +1,8 @@
 name: menu_inline_filter
 description: A new Flutter package project.
 version: 0.0.1
-author:
-homepage:
+homepage: https://kevinmendez.fi/
+repository: https://github.com/kevinrmendez/menu_inline_filter
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
