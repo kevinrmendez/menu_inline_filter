@@ -37,6 +37,7 @@ class _MyHomePageState extends State<MyHomePage> {
     ['subcategory3.1', 'subcategory3.2', 'subcategory3.3'],
   ];
 
+//your data of items that contains category and subcategory properties
   List<Item> items = itemsData;
 
   List<Item> _filteredItems;
@@ -51,16 +52,20 @@ class _MyHomePageState extends State<MyHomePage> {
     _filteredItems = _filterItemsCategory(_currentCategory);
   }
 
+//change of state based on category selection
   void _updateCategory(value) {
     setState(() {
       _currentCategory = value;
+      //filter items based on category
       _filteredItems = _filterItemsCategory(value);
     });
   }
 
+//change of state based on sub category selection
   void _updateSubCategory(value) {
     setState(() {
       _currentSubCategory = value;
+      //filter items based on subcategory
       _filteredItems = _filterItemsSubCategory(_currentSubCategory);
     });
   }
@@ -88,11 +93,16 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             MenuInlineFilter(
               animationDuration: 500,
+              //callback run after selecting a category
               updateCategory: _updateCategory,
+              //callback run after selecting a subcategory
               updateSubCategory: _updateSubCategory,
+              //list of Strings with main categories
               categories: _mainCategories,
+              //list of of list of Strings with subcategories
               subcategories: _subcategories,
             ),
+            //
             Expanded(
               child: ListView(
                 children: _filteredItems
