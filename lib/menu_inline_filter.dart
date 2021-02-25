@@ -148,7 +148,6 @@ class _MenuInlineFilterState extends State<MenuInlineFilter>
         .findRenderObject() as RenderBox;
     var position = box.localToGlobal(Offset.zero);
 
-    print("POS: $position");
     setState(() {
       _horizontalOffset = -position.dx +
           widget.horizontalPadding -
