@@ -17,6 +17,22 @@ class MenuInlineFilter extends StatefulWidget {
   final double horizontalPadding;
   //background color of menu filter
   final Color backgroundColor;
+  //selectedCategory color
+  final Color selectedCategoryColor;
+  //text color
+  final Color textColor;
+  //selected subcategory color
+  final Color selectedSubCategoryColor;
+  //unselected category color
+  final Color unselectedCategoryColor;
+  //unselected subcategory color
+  final Color unselectedSubCategoryColor;
+//font size
+  final double fontSize;
+  //font family
+  final String fontFamily;
+
+  final int animationDuration;
 
   const MenuInlineFilter({
     Key key,
@@ -27,6 +43,14 @@ class MenuInlineFilter extends StatefulWidget {
     this.height = 50,
     this.horizontalPadding = 15,
     this.backgroundColor = Colors.white,
+    this.fontSize = 13,
+    this.selectedCategoryColor = Colors.red,
+    this.textColor = Colors.grey,
+    this.selectedSubCategoryColor = Colors.black,
+    this.unselectedCategoryColor = Colors.grey,
+    this.unselectedSubCategoryColor = Colors.grey,
+    this.fontFamily = 'roboto',
+    this.animationDuration = 800,
   })  : assert(subcategories != null),
         assert(categories != null),
         assert(subcategories is List<List<String>>),
@@ -41,26 +65,24 @@ class _MenuInlineFilterState extends State<MenuInlineFilter>
     with TickerProviderStateMixin {
 // horizontal offset of menu filter
   double _horizontalOffset;
-  //current MenuItemCategory
-  String _selectecCategory;
   // animation controller
   AnimationController _controller;
   // animation
   Animation<double> _animation;
   //menu items global keys
   List<GlobalKey> globalkeys;
-  //MenuInlineFilter global keu
+  //MenuCategoryAppBarItemExpandable global keu
   GlobalKey menuFilterKey = GlobalKey();
-  //size of MenuInlineFilter widget
+  //size of MenuCategoryAppBarItemExpandable widget
   double filterSizeWidth;
   //size of individual menu item
   double menuItemSize;
   // check if any item from menu filter is selected
-  bool _isCurrentItemSelected;
+  bool _isCurrentItemShown;
   // scroll controller
   final ScrollController _scrollController = ScrollController();
   // animation duration
-  static const int _animationDuration = 800;
+  // static const int _animationDuration = 800;
   //current category index
   int _selectedCategoryIndex;
   //current subcategory index
@@ -69,10 +91,9 @@ class _MenuInlineFilterState extends State<MenuInlineFilter>
   @override
   void initState() {
     super.initState();
-    _isCurrentItemSelected = false;
+    _isCurrentItemShown = false;
     _horizontalOffset = 0;
     _selectedCategoryIndex = 0;
-    _selectecCategory = widget.categories[0];
     globalkeys = widget.categories
         .map((value) => GlobalKey(debugLabel: value.toString()))
         .toList();
@@ -80,31 +101,21 @@ class _MenuInlineFilterState extends State<MenuInlineFilter>
     menuItemSize = 0;
     WidgetsBinding.instance.addPostFrameCallback(_getMenuFilterSize);
     _controller = AnimationController(
-      duration: const Duration(milliseconds: _animationDuration),
+      duration: Duration(milliseconds: widget.animationDuration),
       vsync: this,
     );
     _animation =
         Tween(begin: 1.0, end: 1 / _horizontalOffset).animate(_controller);
   }
 
-  void _changeSelectedCategory(String value) {
-    setState(() {
-      _selectecCategory = value;
-    });
-  }
-
-  void _changeSelectedSubCategory(String value) {
-    setState(() {
-      _selectecCategory = value;
-    });
-  }
-
+//change category index
   void _changeSelectedCategoryIndex(int value) {
     setState(() {
       _selectedCategoryIndex = value;
     });
   }
 
+//change subcategory index
   void _changeSelectedSubCategoryIndex(int value) {
     setState(() {
       _selectedSubCategoryIndex = value;
@@ -120,10 +131,8 @@ class _MenuInlineFilterState extends State<MenuInlineFilter>
     });
   }
 
+//change menu filter horizontal offset
   void _changeHorizontalOffset() {
-    //difference between offset and menuitembar width size(70)
-    // some padding 12
-    //change offset based on enum index MenuItemCategory
     final RenderBox box = globalkeys[_selectedCategoryIndex]
         .currentContext
         .findRenderObject() as RenderBox;
@@ -131,7 +140,6 @@ class _MenuInlineFilterState extends State<MenuInlineFilter>
 
     print("POS: $position");
     setState(() {
-      // _horizontalOffset = -80 * _selectecCategory.index.toDouble();
       _horizontalOffset = -position.dx +
           widget.horizontalPadding -
           _scrollController.position.pixels;
@@ -139,12 +147,13 @@ class _MenuInlineFilterState extends State<MenuInlineFilter>
 
     //scroll menu filter to beginning of scroll
     _scrollController.animateTo(0.0,
-        duration: const Duration(milliseconds: 800), curve: Curves.linear);
+        duration: Duration(milliseconds: widget.animationDuration),
+        curve: Curves.linear);
 
     _controller.forward().then((value) => {
           //show static current menu item
           setState(() {
-            _isCurrentItemSelected = true;
+            _isCurrentItemShown = true;
           })
         });
   }
@@ -166,12 +175,13 @@ class _MenuInlineFilterState extends State<MenuInlineFilter>
   void _resetOffset() {
     //make current item invisible
     setState(() {
-      _isCurrentItemSelected = false;
+      _isCurrentItemShown = false;
     });
 
     setState(() {
       _horizontalOffset = 0;
     });
+
     _controller.reverse();
   }
 
@@ -184,123 +194,127 @@ class _MenuInlineFilterState extends State<MenuInlineFilter>
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return MenuInlineFilterProvider(
+      fontFamily: widget.fontFamily,
+      fontSize: widget.fontSize,
       height: widget.height,
-      padding: EdgeInsets.symmetric(horizontal: widget.horizontalPadding),
-      color: widget.backgroundColor,
-      margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-      child: Stack(
-        children: [
-          SingleChildScrollView(
-              physics: const ClampingScrollPhysics(),
-              controller: _scrollController,
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  SizeTransition(
-                    axis: Axis.horizontal,
-                    sizeFactor: _animation,
-                    axisAlignment: -1,
-                    child: Stack(
-                      children: [
-                        Container(
-                          width: filterSizeWidth,
-                        ),
-                        AnimatedPositioned(
-                          duration:
-                              const Duration(milliseconds: _animationDuration),
-                          left: _horizontalOffset,
-                          child: Row(
-                            key: menuFilterKey,
-                            children: [
-                              Row(
-                                  children: widget.categories
-                                      .map(
-                                        (category) => MenuCategoryAppBarItem(
-                                          height: widget.height,
-                                          index: widget.categories
-                                              .indexOf(category),
-                                          changeSelectedCategoryIndex:
-                                              _changeSelectedCategoryIndex,
-                                          key: globalkeys[widget.categories
-                                              .indexOf(category)],
-                                          getItemSize: _getItemSize,
-                                          selectedCategory: _selectecCategory,
-                                          changeSelectedCategory:
-                                              _changeSelectedCategory,
-                                          resetHorizontalOffset: _resetOffset,
-                                          changeMenuFilterOffset:
-                                              _changeHorizontalOffset,
-                                          title: category,
-                                          // title: getMenuCategoryName(category),
-                                          updateCategory: widget.updateCategory,
-                                          textColor: widget.categories
-                                                      .indexOf(category) ==
-                                                  _selectedCategoryIndex
-                                              ? Colors.red
-                                              : Colors.grey,
-                                          menuItemCategory: category,
-                                        ),
-                                      )
-                                      .toList()),
-                            ],
+      child: Container(
+        height: widget.height,
+        padding: EdgeInsets.symmetric(horizontal: widget.horizontalPadding),
+        color: widget.backgroundColor,
+        margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+        child: Stack(
+          children: [
+            SingleChildScrollView(
+                physics: const ClampingScrollPhysics(),
+                controller: _scrollController,
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    SizeTransition(
+                      axis: Axis.horizontal,
+                      sizeFactor: _animation,
+                      axisAlignment: -1,
+                      child: Stack(
+                        children: [
+                          Container(
+                            width: filterSizeWidth,
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const VerticalDivider(),
-                  //SUBCATEGORIES
-                  Row(
-                    children: widget.subcategories[_selectedCategoryIndex]
-                        .map(
-                          (subcategory) => MenuSubCategoryAppBarItem(
-                              height: widget.height,
-                              index: widget
-                                  .subcategories[_selectedCategoryIndex]
-                                  .indexOf(subcategory),
-                              title: subcategory,
-                              textColor: widget
-                                          .subcategories[_selectedCategoryIndex]
-                                          .indexOf(subcategory) ==
-                                      _selectedSubCategoryIndex
-                                  // _getSubCategoryFromString(subcategory)
-                                  ? Colors.black
-                                  : Colors.grey,
-                              updateSubCategory: widget.updateSubCategory,
-                              selectedSubCategory: subcategory,
-                              changeSelectedSubCategoryIndex:
-                                  _changeSelectedSubCategoryIndex
-                              // _getSubCategoryFromString(subcategory),
-                              ),
-                        )
-                        .toList(),
-                  )
-                ],
-              )),
-          // CURRENT SELECTED MENU ITEM
-          Positioned(
-            left: 0,
-            child: IgnorePointer(
-              child: Opacity(
-                opacity: _isCurrentItemSelected ? 1 : 0,
-                child: Container(
-                  color: Colors.white,
-                  child: Row(
-                    children: [
-                      MenuAppBarItem(
-                        height: widget.height,
-                        title: _selectecCategory,
-                        textColor: Colors.red,
+                          AnimatedPositioned(
+                            duration: Duration(
+                                milliseconds: widget.animationDuration),
+                            left: _horizontalOffset,
+                            child: Row(
+                              key: menuFilterKey,
+                              children: [
+                                Row(
+                                    children: widget.categories
+                                        .map(
+                                          (category) => MenuCategoryAppBarItem(
+                                            index: widget.categories
+                                                .indexOf(category),
+                                            changeSelectedCategoryIndex:
+                                                _changeSelectedCategoryIndex,
+                                            key: globalkeys[widget.categories
+                                                .indexOf(category)],
+                                            getItemSize: _getItemSize,
+                                            selectedCategory: widget.categories[
+                                                _selectedCategoryIndex],
+                                            resetHorizontalOffset: _resetOffset,
+                                            changeMenuFilterOffset:
+                                                _changeHorizontalOffset,
+                                            title: category,
+                                            updateCategory:
+                                                widget.updateCategory,
+                                            textColor: widget.categories
+                                                        .indexOf(category) ==
+                                                    _selectedCategoryIndex
+                                                ? widget.selectedCategoryColor
+                                                : widget
+                                                    .unselectedCategoryColor,
+                                            menuItemCategory: category,
+                                          ),
+                                        )
+                                        .toList()),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                      const VerticalDivider(),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
+                    ),
+                    const VerticalDivider(),
+                    //SUBCATEGORIES
+                    Row(
+                      children: widget.subcategories[_selectedCategoryIndex]
+                          .map(
+                            (subcategory) => MenuSubCategoryAppBarItem(
+                                index: widget
+                                    .subcategories[_selectedCategoryIndex]
+                                    .indexOf(subcategory),
+                                title: subcategory,
+                                textColor:
+                                    widget.subcategories[_selectedCategoryIndex]
+                                                .indexOf(subcategory) ==
+                                            _selectedSubCategoryIndex
+                                        ? widget.selectedSubCategoryColor
+                                        : widget.unselectedSubCategoryColor,
+                                updateSubCategory: widget.updateSubCategory,
+                                selectedSubCategory: subcategory,
+                                changeSelectedSubCategoryIndex:
+                                    _changeSelectedSubCategoryIndex),
+                          )
+                          .toList(),
+                    )
+                  ],
+                )),
+            // CURRENT SELECTED MENU ITEM
+            Positioned(
+                left: 0,
+                child: _isCurrentItemShown
+                    ? Container(
+                        color: Colors.white,
+                        child: Row(
+                          children: [
+                            MenuAppBarItem(
+                              onTapDown: (details) {
+                                _scrollController
+                                    .animateTo(0.0,
+                                        duration: Duration(
+                                            milliseconds:
+                                                widget.animationDuration),
+                                        curve: Curves.linear)
+                                    .then((value) => _resetOffset());
+                              },
+                              title: widget.categories[_selectedCategoryIndex],
+                              textColor: widget.selectedCategoryColor,
+                            ),
+                            const VerticalDivider(),
+                          ],
+                        ),
+                      )
+                    : const SizedBox()),
+          ],
+        ),
       ),
     );
   }
@@ -322,9 +336,34 @@ class VerticalDivider extends StatelessWidget {
   }
 }
 
+class MenuInlineFilterProvider extends InheritedWidget {
+  const MenuInlineFilterProvider({
+    Key key,
+    @required this.height,
+    @required this.fontSize,
+    @required this.fontFamily,
+    @required Widget child,
+  })  : assert(child != null),
+        super(key: key, child: child);
+
+  final double height;
+  final double fontSize;
+  final String fontFamily;
+
+  static MenuInlineFilterProvider of(BuildContext context) {
+    return context
+        .dependOnInheritedWidgetOfExactType<MenuInlineFilterProvider>();
+  }
+
+  @override
+  bool updateShouldNotify(MenuInlineFilterProvider old) {
+    return true;
+  }
+}
+
 class MenuCategoryAppBarItem extends StatefulWidget {
   final String title;
-  final double height;
+
   final int index;
   final String menuItemCategory;
   final Function updateCategory;
@@ -334,7 +373,7 @@ class MenuCategoryAppBarItem extends StatefulWidget {
   final Function changeMenuFilterOffset;
   final Color textColor;
   final String selectedCategory;
-  final Function changeSelectedCategory;
+
   const MenuCategoryAppBarItem({
     Key key,
     @required this.title,
@@ -344,11 +383,9 @@ class MenuCategoryAppBarItem extends StatefulWidget {
     this.changeMenuFilterOffset,
     this.resetHorizontalOffset,
     this.selectedCategory,
-    this.changeSelectedCategory,
     this.getItemSize,
     @required this.index,
     this.changeSelectedCategoryIndex,
-    this.height,
   }) : super(key: key);
 
   @override
@@ -379,7 +416,6 @@ class _MenuCategoryAppBarItemState extends State<MenuCategoryAppBarItem> {
         setState(() {
           _isOpen = !_isOpen;
         });
-        widget.changeSelectedCategory(widget.menuItemCategory);
         //update category for filtering menut list
         if (widget.updateCategory != null) {
           widget.updateCategory(widget.menuItemCategory);
@@ -391,7 +427,6 @@ class _MenuCategoryAppBarItemState extends State<MenuCategoryAppBarItem> {
         //get size of individual menu item (used for closed transition animation)
         widget.getItemSize(widget.menuItemCategory);
       },
-      height: widget.height,
       title: widget.title,
       textColor: widget.textColor,
     );
@@ -405,7 +440,6 @@ class MenuSubCategoryAppBarItem extends StatelessWidget {
   final Function updateSubCategory;
   final Function changeSelectedSubCategoryIndex;
   final Color textColor;
-  final double height;
 
   const MenuSubCategoryAppBarItem({
     Key key,
@@ -415,7 +449,6 @@ class MenuSubCategoryAppBarItem extends StatelessWidget {
     this.textColor,
     this.index,
     this.changeSelectedSubCategoryIndex,
-    this.height,
   }) : super(key: key);
 
   @override
@@ -427,7 +460,6 @@ class MenuSubCategoryAppBarItem extends StatelessWidget {
         }
         changeSelectedSubCategoryIndex(index);
       },
-      height: height,
       title: title,
       textColor: textColor,
     );
@@ -439,27 +471,32 @@ class MenuAppBarItem extends StatelessWidget {
     Key key,
     @required this.title,
     this.textColor = Colors.grey,
-    this.height,
     this.onTapDown,
   }) : super(key: key);
 
   final String title;
   final Color textColor;
-  final double height;
+
   final void Function(TapDownDetails) onTapDown;
 
   @override
   Widget build(BuildContext context) {
+    MenuInlineFilterProvider _menuInlineFilterProvider =
+        MenuInlineFilterProvider.of(context);
+
     return GestureDetector(
       onTapDown: onTapDown,
       child: Container(
-        height: height,
+        height: _menuInlineFilterProvider.height,
         margin: const EdgeInsets.symmetric(horizontal: 5),
         child: Center(
           child: Text(title.toUpperCase(),
               overflow: TextOverflow.fade,
               // style: AppTextStyles.inlineFilter.copyWith(color: textColor)),
-              style: TextStyle(color: textColor, fontSize: 16)),
+              style: TextStyle(
+                  color: textColor,
+                  fontSize: _menuInlineFilterProvider.fontSize,
+                  fontFamily: _menuInlineFilterProvider.fontFamily)),
         ),
       ),
     );

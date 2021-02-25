@@ -87,6 +87,7 @@ class _MyHomePageState extends State<MyHomePage> {
           // mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             MenuInlineFilter(
+              animationDuration: 500,
               updateCategory: _updateCategory,
               updateSubCategory: _updateSubCategory,
               categories: _mainCategories,
