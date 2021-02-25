@@ -88,12 +88,15 @@ class _MenuInlineFilterState extends State<MenuInlineFilter>
   //current subcategory index
   int _selectedSubCategoryIndex;
 
+  String _selectedSubcategory;
+
   @override
   void initState() {
     super.initState();
     _isCurrentItemShown = false;
     _horizontalOffset = 0;
     _selectedCategoryIndex = 0;
+    _selectedSubcategory = "";
     globalkeys = widget.categories
         .map((value) => GlobalKey(debugLabel: value.toString()))
         .toList();
@@ -119,6 +122,13 @@ class _MenuInlineFilterState extends State<MenuInlineFilter>
   void _changeSelectedSubCategoryIndex(int value) {
     setState(() {
       _selectedSubCategoryIndex = value;
+    });
+  }
+
+  //change subcategory index
+  void _changeSelectedSubCategory(String value) {
+    setState(() {
+      _selectedSubcategory = value;
     });
   }
 
@@ -192,6 +202,23 @@ class _MenuInlineFilterState extends State<MenuInlineFilter>
     _scrollController.dispose();
   }
 
+//get subcategory test color based on menu filter state
+  Color _getSubCategoryTextColor(String subcategory) {
+    return _selectedSubcategory == ''
+        ? widget.unselectedCategoryColor
+        : widget.subcategories[_selectedCategoryIndex].indexOf(subcategory) ==
+                _selectedSubCategoryIndex
+            ? widget.selectedSubCategoryColor
+            : widget.unselectedSubCategoryColor;
+  }
+
+//get category test color based on menu filter state
+  Color _getCategoryTextColor(String category) {
+    return widget.categories.indexOf(category) == _selectedCategoryIndex
+        ? widget.selectedCategoryColor
+        : widget.unselectedCategoryColor;
+  }
+
   @override
   Widget build(BuildContext context) {
     return MenuInlineFilterProvider(
@@ -246,12 +273,8 @@ class _MenuInlineFilterState extends State<MenuInlineFilter>
                                             title: category,
                                             updateCategory:
                                                 widget.updateCategory,
-                                            textColor: widget.categories
-                                                        .indexOf(category) ==
-                                                    _selectedCategoryIndex
-                                                ? widget.selectedCategoryColor
-                                                : widget
-                                                    .unselectedCategoryColor,
+                                            textColor:
+                                                _getCategoryTextColor(category),
                                             menuItemCategory: category,
                                           ),
                                         )
@@ -273,15 +296,13 @@ class _MenuInlineFilterState extends State<MenuInlineFilter>
                                     .indexOf(subcategory),
                                 title: subcategory,
                                 textColor:
-                                    widget.subcategories[_selectedCategoryIndex]
-                                                .indexOf(subcategory) ==
-                                            _selectedSubCategoryIndex
-                                        ? widget.selectedSubCategoryColor
-                                        : widget.unselectedSubCategoryColor,
+                                    _getSubCategoryTextColor(subcategory),
                                 updateSubCategory: widget.updateSubCategory,
                                 selectedSubCategory: subcategory,
                                 changeSelectedSubCategoryIndex:
-                                    _changeSelectedSubCategoryIndex),
+                                    _changeSelectedSubCategoryIndex,
+                                changeSelectedSubCategory:
+                                    _changeSelectedSubCategory),
                           )
                           .toList(),
                     )
@@ -304,6 +325,10 @@ class _MenuInlineFilterState extends State<MenuInlineFilter>
                                                 widget.animationDuration),
                                         curve: Curves.linear)
                                     .then((value) => _resetOffset());
+                                //remove selection from subcategory when menu filter closed
+                                setState(() {
+                                  _selectedSubcategory = '';
+                                });
                               },
                               title: widget.categories[_selectedCategoryIndex],
                               textColor: widget.selectedCategoryColor,
@@ -420,6 +445,7 @@ class _MenuCategoryAppBarItemState extends State<MenuCategoryAppBarItem> {
         if (widget.updateCategory != null) {
           widget.updateCategory(widget.menuItemCategory);
         }
+
         //change selected category index
         widget.changeSelectedCategoryIndex(widget.index);
         //move menu filter based on menu item selection
@@ -439,6 +465,7 @@ class MenuSubCategoryAppBarItem extends StatelessWidget {
   final String selectedSubCategory;
   final Function updateSubCategory;
   final Function changeSelectedSubCategoryIndex;
+  final Function changeSelectedSubCategory;
   final Color textColor;
 
   const MenuSubCategoryAppBarItem({
@@ -449,6 +476,7 @@ class MenuSubCategoryAppBarItem extends StatelessWidget {
     this.textColor,
     this.index,
     this.changeSelectedSubCategoryIndex,
+    this.changeSelectedSubCategory,
   }) : super(key: key);
 
   @override
@@ -459,6 +487,7 @@ class MenuSubCategoryAppBarItem extends StatelessWidget {
           updateSubCategory(selectedSubCategory);
         }
         changeSelectedSubCategoryIndex(index);
+        changeSelectedSubCategory(selectedSubCategory);
       },
       title: title,
       textColor: textColor,
