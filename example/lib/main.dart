@@ -92,6 +92,7 @@ class _MyHomePageState extends State<MyHomePage> {
           // mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             MenuInlineFilter(
+              fontSize: 14,
               animationDuration: 500,
               //callback run after selecting a category
               updateCategory: _updateCategory,
