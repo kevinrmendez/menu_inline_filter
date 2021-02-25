@@ -81,13 +81,11 @@ class _MenuInlineFilterState extends State<MenuInlineFilter>
   bool _isCurrentItemShown;
   // scroll controller
   final ScrollController _scrollController = ScrollController();
-  // animation duration
-  // static const int _animationDuration = 800;
   //current category index
   int _selectedCategoryIndex;
   //current subcategory index
   int _selectedSubCategoryIndex;
-
+  //current selected subcategory
   String _selectedSubcategory;
 
   @override
@@ -520,7 +518,6 @@ class MenuAppBarItem extends StatelessWidget {
         child: Center(
           child: Text(title.toUpperCase(),
               overflow: TextOverflow.fade,
-              // style: AppTextStyles.inlineFilter.copyWith(color: textColor)),
               style: TextStyle(
                   color: textColor,
                   fontSize: _menuInlineFilterProvider.fontSize,
