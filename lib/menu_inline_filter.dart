@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 
 class MenuInlineFilter extends StatefulWidget {
   //callback used when category selected
-  final Function updateCategory;
+  final Function? updateCategory;
   //callback used when category subcategory selected
-  final Function updateSubCategory;
+  final Function? updateSubCategory;
 //list of list of subcategories
   final List<List<String>> subcategories;
   //list of categories
@@ -35,10 +35,10 @@ class MenuInlineFilter extends StatefulWidget {
   final int animationDuration;
 
   const MenuInlineFilter({
-    Key key,
+    Key? key,
     this.updateCategory,
-    @required this.subcategories,
-    @required this.categories,
+    required this.subcategories,
+    required this.categories,
     this.updateSubCategory,
     this.height = 50,
     this.horizontalPadding = 15,
@@ -64,29 +64,29 @@ class MenuInlineFilter extends StatefulWidget {
 class _MenuInlineFilterState extends State<MenuInlineFilter>
     with TickerProviderStateMixin {
 // horizontal offset of menu filter
-  double _horizontalOffset;
+  double? _horizontalOffset;
   // animation controller
-  AnimationController _controller;
+  late AnimationController _controller;
   // animation
-  Animation<double> _animation;
+  late Animation<double> _animation;
   //menu items global keys
-  List<GlobalKey> globalkeys;
+  late List<GlobalKey> globalkeys;
   //MenuCategoryAppBarItemExpandable global keu
   GlobalKey menuFilterKey = GlobalKey();
   //size of MenuCategoryAppBarItemExpandable widget
-  double filterSizeWidth;
+  double? filterSizeWidth;
   //size of individual menu item
-  double menuItemSize;
+  late double menuItemSize;
   // check if any item from menu filter is selected
-  bool _isCurrentItemShown;
+  late bool _isCurrentItemShown;
   // scroll controller
   final ScrollController _scrollController = ScrollController();
   //current category index
-  int _selectedCategoryIndex;
+  int? _selectedCategoryIndex;
   //current subcategory index
-  int _selectedSubCategoryIndex;
+  int? _selectedSubCategoryIndex;
   //current selected subcategory
-  String _selectedSubcategory;
+  String? _selectedSubcategory;
 
   @override
   void initState() {
@@ -106,7 +106,7 @@ class _MenuInlineFilterState extends State<MenuInlineFilter>
       vsync: this,
     );
     _animation =
-        Tween(begin: 1.0, end: 1 / _horizontalOffset).animate(_controller);
+        Tween(begin: 1.0, end: 1 / _horizontalOffset!).animate(_controller);
   }
 
 //change category index
@@ -132,17 +132,17 @@ class _MenuInlineFilterState extends State<MenuInlineFilter>
 
 //get total width of expandable menu filter
   void _getMenuFilterSize(Duration duration) {
-    RenderBox box =
-        menuFilterKey.currentContext.findRenderObject() as RenderBox;
+    RenderBox? box =
+        menuFilterKey.currentContext!.findRenderObject() as RenderBox?;
     setState(() {
-      filterSizeWidth = box.size.width;
+      filterSizeWidth = box!.size.width;
     });
   }
 
 //change menu filter horizontal offset
   void _changeHorizontalOffset() {
-    final RenderBox box = globalkeys[_selectedCategoryIndex]
-        .currentContext
+    final RenderBox box = globalkeys[_selectedCategoryIndex!]
+        .currentContext!
         .findRenderObject() as RenderBox;
     var position = box.localToGlobal(Offset.zero);
 
@@ -167,13 +167,13 @@ class _MenuInlineFilterState extends State<MenuInlineFilter>
 
 //get size of individual menu Item
   void _getItemSize(String category) {
-    final RenderBox box = globalkeys[_selectedCategoryIndex]
-        .currentContext
-        .findRenderObject() as RenderBox;
+    final RenderBox? box = globalkeys[_selectedCategoryIndex!]
+        .currentContext!
+        .findRenderObject() as RenderBox?;
 
     setState(() {
-      menuItemSize = box.size.width;
-      _animation = Tween(begin: 1.0, end: menuItemSize / filterSizeWidth)
+      menuItemSize = box!.size.width;
+      _animation = Tween(begin: 1.0, end: menuItemSize / filterSizeWidth!)
           .animate(_controller);
     });
   }
@@ -203,7 +203,7 @@ class _MenuInlineFilterState extends State<MenuInlineFilter>
   Color _getSubCategoryTextColor(String subcategory) {
     return _selectedSubcategory == ''
         ? widget.unselectedCategoryColor
-        : widget.subcategories[_selectedCategoryIndex].indexOf(subcategory) ==
+        : widget.subcategories[_selectedCategoryIndex!].indexOf(subcategory) ==
                 _selectedSubCategoryIndex
             ? widget.selectedSubCategoryColor
             : widget.unselectedSubCategoryColor;
@@ -263,7 +263,7 @@ class _MenuInlineFilterState extends State<MenuInlineFilter>
                                                 .indexOf(category)],
                                             getItemSize: _getItemSize,
                                             selectedCategory: widget.categories[
-                                                _selectedCategoryIndex],
+                                                _selectedCategoryIndex!],
                                             resetHorizontalOffset: _resetOffset,
                                             changeMenuFilterOffset:
                                                 _changeHorizontalOffset,
@@ -285,11 +285,11 @@ class _MenuInlineFilterState extends State<MenuInlineFilter>
                     const VerticalDivider(),
                     //SUBCATEGORIES
                     Row(
-                      children: widget.subcategories[_selectedCategoryIndex]
+                      children: widget.subcategories[_selectedCategoryIndex!]
                           .map(
                             (subcategory) => MenuSubCategoryAppBarItem(
                                 index: widget
-                                    .subcategories[_selectedCategoryIndex]
+                                    .subcategories[_selectedCategoryIndex!]
                                     .indexOf(subcategory),
                                 title: subcategory,
                                 textColor:
@@ -327,7 +327,7 @@ class _MenuInlineFilterState extends State<MenuInlineFilter>
                                   _selectedSubcategory = '';
                                 });
                               },
-                              title: widget.categories[_selectedCategoryIndex],
+                              title: widget.categories[_selectedCategoryIndex!],
                               textColor: widget.selectedCategoryColor,
                             ),
                             const VerticalDivider(),
@@ -344,7 +344,7 @@ class _MenuInlineFilterState extends State<MenuInlineFilter>
 
 class VerticalDivider extends StatelessWidget {
   const VerticalDivider({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -360,11 +360,11 @@ class VerticalDivider extends StatelessWidget {
 
 class MenuInlineFilterProvider extends InheritedWidget {
   const MenuInlineFilterProvider({
-    Key key,
-    @required this.height,
-    @required this.fontSize,
-    @required this.fontFamily,
-    @required Widget child,
+    Key? key,
+    required this.height,
+    required this.fontSize,
+    required this.fontFamily,
+    required Widget child,
   })  : assert(child != null),
         super(key: key, child: child);
 
@@ -372,7 +372,7 @@ class MenuInlineFilterProvider extends InheritedWidget {
   final double fontSize;
   final String fontFamily;
 
-  static MenuInlineFilterProvider of(BuildContext context) {
+  static MenuInlineFilterProvider? of(BuildContext context) {
     return context
         .dependOnInheritedWidgetOfExactType<MenuInlineFilterProvider>();
   }
@@ -387,18 +387,18 @@ class MenuCategoryAppBarItem extends StatefulWidget {
   final String title;
 
   final int index;
-  final String menuItemCategory;
-  final Function updateCategory;
-  final Function changeSelectedCategoryIndex;
-  final Function resetHorizontalOffset;
-  final Function getItemSize;
-  final Function changeMenuFilterOffset;
-  final Color textColor;
-  final String selectedCategory;
+  final String? menuItemCategory;
+  final Function? updateCategory;
+  final Function? changeSelectedCategoryIndex;
+  final Function? resetHorizontalOffset;
+  final Function? getItemSize;
+  final Function? changeMenuFilterOffset;
+  final Color? textColor;
+  final String? selectedCategory;
 
   const MenuCategoryAppBarItem({
-    Key key,
-    @required this.title,
+    Key? key,
+    required this.title,
     this.menuItemCategory,
     this.updateCategory,
     this.textColor,
@@ -406,7 +406,7 @@ class MenuCategoryAppBarItem extends StatefulWidget {
     this.resetHorizontalOffset,
     this.selectedCategory,
     this.getItemSize,
-    @required this.index,
+    required this.index,
     this.changeSelectedCategoryIndex,
   }) : super(key: key);
 
@@ -416,7 +416,7 @@ class MenuCategoryAppBarItem extends StatefulWidget {
 
 class _MenuCategoryAppBarItemState extends State<MenuCategoryAppBarItem> {
   // detect if menu item state is open or close
-  bool _isOpen;
+  late bool _isOpen;
   @override
   void initState() {
     _isOpen = false;
@@ -425,9 +425,9 @@ class _MenuCategoryAppBarItemState extends State<MenuCategoryAppBarItem> {
 
   void _moveMenuFilter(BuildContext context) {
     if (widget.selectedCategory == widget.menuItemCategory && !_isOpen) {
-      widget.resetHorizontalOffset();
+      widget.resetHorizontalOffset!();
     } else {
-      widget.changeMenuFilterOffset();
+      widget.changeMenuFilterOffset!();
     }
   }
 
@@ -440,15 +440,15 @@ class _MenuCategoryAppBarItemState extends State<MenuCategoryAppBarItem> {
         });
         //update category for filtering menut list
         if (widget.updateCategory != null) {
-          widget.updateCategory(widget.menuItemCategory);
+          widget.updateCategory!(widget.menuItemCategory);
         }
 
         //change selected category index
-        widget.changeSelectedCategoryIndex(widget.index);
+        widget.changeSelectedCategoryIndex!(widget.index);
         //move menu filter based on menu item selection
         _moveMenuFilter(context);
         //get size of individual menu item (used for closed transition animation)
-        widget.getItemSize(widget.menuItemCategory);
+        widget.getItemSize!(widget.menuItemCategory);
       },
       title: widget.title,
       textColor: widget.textColor,
@@ -457,17 +457,17 @@ class _MenuCategoryAppBarItemState extends State<MenuCategoryAppBarItem> {
 }
 
 class MenuSubCategoryAppBarItem extends StatelessWidget {
-  final int index;
+  final int? index;
   final String title;
-  final String selectedSubCategory;
-  final Function updateSubCategory;
-  final Function changeSelectedSubCategoryIndex;
-  final Function changeSelectedSubCategory;
-  final Color textColor;
+  final String? selectedSubCategory;
+  final Function? updateSubCategory;
+  final Function? changeSelectedSubCategoryIndex;
+  final Function? changeSelectedSubCategory;
+  final Color? textColor;
 
   const MenuSubCategoryAppBarItem({
-    Key key,
-    @required this.title,
+    Key? key,
+    required this.title,
     this.selectedSubCategory,
     this.updateSubCategory,
     this.textColor,
@@ -481,10 +481,10 @@ class MenuSubCategoryAppBarItem extends StatelessWidget {
     return MenuAppBarItem(
       onTapDown: (details) {
         if (updateSubCategory != null) {
-          updateSubCategory(selectedSubCategory);
+          updateSubCategory!(selectedSubCategory);
         }
-        changeSelectedSubCategoryIndex(index);
-        changeSelectedSubCategory(selectedSubCategory);
+        changeSelectedSubCategoryIndex!(index);
+        changeSelectedSubCategory!(selectedSubCategory);
       },
       title: title,
       textColor: textColor,
@@ -494,21 +494,21 @@ class MenuSubCategoryAppBarItem extends StatelessWidget {
 
 class MenuAppBarItem extends StatelessWidget {
   const MenuAppBarItem({
-    Key key,
-    @required this.title,
+    Key? key,
+    required this.title,
     this.textColor = Colors.grey,
     this.onTapDown,
   }) : super(key: key);
 
   final String title;
-  final Color textColor;
+  final Color? textColor;
 
-  final void Function(TapDownDetails) onTapDown;
+  final void Function(TapDownDetails)? onTapDown;
 
   @override
   Widget build(BuildContext context) {
     MenuInlineFilterProvider _menuInlineFilterProvider =
-        MenuInlineFilterProvider.of(context);
+        MenuInlineFilterProvider.of(context)!;
 
     return GestureDetector(
       onTapDown: onTapDown,
