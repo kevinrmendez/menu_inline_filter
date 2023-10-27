@@ -1,10 +1,10 @@
 # Introduction
 
-> First off, thank you for considering contributing to Menu Inline Filter. It's people like you that make Menu Inline Filter such a great tool.
+First off all, I would like to thank you for thinking of contributing to Menu Inline Filter. All the help is appreciate it!
 
 # Where do I go from here?
 
-If you've noticed a bug or have a feature request, [make one](https://github.com/kevinrmendez/menu_inline_filter/issues/new)! It's generally best if you get confirmation of your bug or approval for your feature request this way before starting to code.
+If there is a new feature you would like to have or you have spot a bug ,feel free to [make one](https://github.com/kevinrmendez/menu_inline_filter/issues/new)!
 
 All kind of contributions are welcome related to documentation, bug fixing and improving the current animation.
 
